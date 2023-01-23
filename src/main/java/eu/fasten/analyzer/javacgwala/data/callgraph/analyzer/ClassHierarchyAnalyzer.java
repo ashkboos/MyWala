@@ -157,9 +157,9 @@ public class ClassHierarchyAnalyzer {
      * @param interfaces     Interfaces implemented by method
      */
     private void processMethod(IClass klass, IMethod declaredMethod, List<IMethod> interfaces) {
-        if (declaredMethod.isPrivate()) {
-            return;
-        }
+//        if (declaredMethod.isPrivate()) {
+//            return;
+//        }
         IClass superKlass = klass.getSuperclass();
         addMethod(declaredMethod);
 

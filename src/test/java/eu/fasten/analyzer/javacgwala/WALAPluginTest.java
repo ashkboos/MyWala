@@ -28,8 +28,15 @@ import eu.fasten.analyzer.javacgwala.data.callgraph.PartialCallGraphGenerator;
 import eu.fasten.core.data.CallPreservationStrategy;
 import eu.fasten.core.data.Constants;
 import eu.fasten.core.data.JavaScope;
+import eu.fasten.core.data.JavaType;
 import eu.fasten.core.data.PartialJavaCallGraph;
+import eu.fasten.core.data.callableindex.SourceCallSites;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.LongLongPair;
 import java.io.FileNotFoundException;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
@@ -95,6 +102,16 @@ class WALAPluginTest {
                 coordinate.getVersionConstraint(), -1, Constants.walaGenerator);
         PartialCallGraphGenerator.generateFromCoordinate(coordinate, ALG, PCG, STRATEGY);
         return PCG;
+    }
+
+    @Test
+    public void testDefinedMethodNum(){
+        final var pcg = generateForCoordinate("org.springframework", "spring-expression", "4.1.7.RELEASE");
+        int size = 0;
+        for (JavaType type : pcg.getClassHierarchy().get(JavaScope.internalTypes).values()) {
+            size += type.getDefinedMethods().size();
+        }
+        assertEquals(920, size);
     }
 
     @Test
