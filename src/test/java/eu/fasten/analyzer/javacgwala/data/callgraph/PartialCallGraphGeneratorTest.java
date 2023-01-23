@@ -98,19 +98,4 @@ class PartialCallGraphGeneratorTest {
         CallAssertions.assertNode(call, "source", sourceExpectation);
         CallAssertions.assertNode(call, "target", targetExpectation);
     }
-
-//    @Test
-//    public void testRTJARCG() throws ClassHierarchyException, IOException, CancelException {
-//        ALG = Algorithm.CHA;
-//        PartialJavaCallGraph pcg = PartialCallGraphGenerator.generateEmptyPCG(mvnForge,
-//            "java", "8", -1, walaGenerator);;
-//
-//        var path = Paths.get(new File(Thread.currentThread().getContextClassLoader()
-//            .getResource("RtJar1.8.0-221.jar").getFile()).getAbsolutePath());
-//        WalaResultAnalyzer.wrap(CallGraphConstructor.generateCallGraph(path.toString(),
-//            ALG), pcg);
-//        System.out.println();
-//
-//    }
-
 }
