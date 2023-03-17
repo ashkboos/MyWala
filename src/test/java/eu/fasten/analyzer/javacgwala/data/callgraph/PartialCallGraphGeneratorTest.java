@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Paths;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class PartialCallGraphGeneratorTest {
@@ -57,6 +58,7 @@ class PartialCallGraphGeneratorTest {
         WalaResultAnalyzer.wrap(CallGraphConstructor.generateCallGraph(path.toString(),
             ALG), graph);
     }
+
 
     @Test
     void testDefaultInit()
@@ -98,4 +100,22 @@ class PartialCallGraphGeneratorTest {
         CallAssertions.assertNode(call, "source", sourceExpectation);
         CallAssertions.assertNode(call, "target", targetExpectation);
     }
+
+    @Disabled
+    @Test
+    public void exceptionInCFA() throws ClassHierarchyException, IOException, CancelException {
+        graph = PartialCallGraphGenerator.generateEmptyPCG(mvnForge,
+            "SingleSourceToTarget", "0.0.0", -1, walaGenerator);
+
+        ALG = Algorithm.CHA;
+        var path = new File("/Users/mehdi/Downloads/njr-1_dataset/url0f7f8f6435_TimmiTBy_Epam_tgz-pJ8-com_epam_electricalappliance_RunnerJ8/jarfile/url0f7f8f6435_TimmiTBy_Epam_tgz-pJ8-com_epam_electricalappliance_RunnerJ8.jar").getAbsolutePath();
+//        var p = Paths.get(new File(Thread.currentThread().getContextClassLoader()
+//            .getResource("SingleSourceToTarget.jar").getFile()).getAbsolutePath());
+        WalaResultAnalyzer.wrap(CallGraphConstructor.generateCallGraph(path,
+                Algorithm.ZERO_CFA), graph);
+        System.out.println();
+    }
+
+
+
 }

@@ -52,7 +52,14 @@ public class EntryPointsGenerator {
             .map(m -> new DefaultEntrypoint(m, cha))
             .collect(Collectors.toCollection(HashSet::new));
     }
-
+    public Set<Entrypoint> getPublicEntryPoints() {
+        return StreamSupport.stream(cha.spliterator(), false)
+                .filter(EntryPointsGenerator::isPublicClass)
+            .flatMap(klass -> klass.getAllMethods().parallelStream())
+                .filter(EntryPointsGenerator::isPublicMethod)
+            .map(m -> new DefaultEntrypoint(m, cha))
+            .collect(Collectors.toCollection(HashSet::new));
+    }
     /**
      * Check if given class is public.
      *

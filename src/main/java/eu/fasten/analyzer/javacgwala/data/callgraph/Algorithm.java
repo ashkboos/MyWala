@@ -19,7 +19,7 @@ package eu.fasten.analyzer.javacgwala.data.callgraph;
 
 public enum Algorithm {
     CHA("CHA"),
-    RTA("RTA");
+    ZERO_CFA("ZERO_CFA");
 
     public final String label;
 

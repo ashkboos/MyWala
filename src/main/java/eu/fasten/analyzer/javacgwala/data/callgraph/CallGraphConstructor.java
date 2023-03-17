@@ -22,8 +22,11 @@ import com.ibm.wala.classLoader.Language;
 import com.ibm.wala.ipa.callgraph.AnalysisCacheImpl;
 import com.ibm.wala.ipa.callgraph.AnalysisOptions;
 import com.ibm.wala.ipa.callgraph.CallGraph;
+import com.ibm.wala.ipa.callgraph.CallGraphBuilder;
+import com.ibm.wala.ipa.callgraph.Entrypoint;
 import com.ibm.wala.ipa.callgraph.cha.CHACallGraph;
 import com.ibm.wala.ipa.callgraph.impl.Util;
+import com.ibm.wala.ipa.callgraph.propagation.InstanceKey;
 import com.ibm.wala.ipa.cha.ClassHierarchyException;
 import com.ibm.wala.ipa.cha.ClassHierarchyFactory;
 import com.ibm.wala.util.CancelException;
@@ -34,12 +37,10 @@ import eu.fasten.core.data.CallPreservationStrategy;
 import eu.fasten.core.data.PartialJavaCallGraph;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Objects;
-import java.util.jar.Attributes;
+import java.util.Set;
 import java.util.jar.JarFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,22 +92,25 @@ public class CallGraphConstructor {
         final var scope = AnalysisScopeReader
             .makeJavaBinaryAnalysisScope(classpath, exclusionFile);
 
-        final var ch = ClassHierarchyFactory.makeWithRoot(scope);
-
-        final var entryPointsGenerator = new EntryPointsGenerator(ch);
-        final var entryPoints = entryPointsGenerator.getEntryPoints();
         CallGraph cg = null;
         switch (alg) {
             case CHA:
+                final var ch = ClassHierarchyFactory.makeWithRoot(scope);
+                final var entryPointsGenerator = new EntryPointsGenerator(ch);
+                final var entryPoints = entryPointsGenerator.getEntryPoints();
                 cg = new CHACallGraph(ch);
                 ((CHACallGraph) cg).init(entryPoints);
                 break;
-            case RTA:
-                final var options = new AnalysisOptions(scope, entryPoints);
-                final var cache = new AnalysisCacheImpl();
-                final var builder =
-                    Util.makeZeroCFABuilder(Language.JAVA, options, cache, ch, scope);
+            case ZERO_CFA:
+
+                final var cha = ClassHierarchyFactory.make(scope);
+                final var epg = new EntryPointsGenerator(cha);
+                AnalysisOptions options = new AnalysisOptions(scope, epg.getPublicEntryPoints());
+                CallGraphBuilder<InstanceKey>
+                    builder = Util.makeZeroCFABuilder(Language.JAVA, options,
+                    new AnalysisCacheImpl(), cha, scope);
                 cg = builder.makeCallGraph(options, null);
+
                 break;
         }
 
